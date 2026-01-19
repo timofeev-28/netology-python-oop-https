@@ -1,8 +1,10 @@
 import sys
+import os
 import requests
+import json
 
 # ссылка на созданную папку с фото
-# https://disk.yandex.ru/d/h_CMNBCnbzVP_A
+# https://disk.yandex.ru/d/JkDr_QGbJQxMpQ
 
 
 class PhotosCats:
@@ -69,6 +71,24 @@ class YandexDiskAPI:
             print(f"Ошибка: {e}")
             return ""
 
+    def append_to_json(self, new_data):
+        """writes data about photo to json-file"""
+
+        filename = os.path.join(os.getcwd(), "files_info.json")
+        if os.path.exists(filename) and os.path.getsize(filename) > 0:
+            with open(filename, "r", encoding="utf-8") as f:
+                try:
+                    existing_data = json.load(f)
+                except json.JSONDecodeError:
+                    existing_data = []
+        else:
+            existing_data = []
+
+        existing_data.append(new_data)
+
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(existing_data, f, ensure_ascii=False, indent=2)
+
     def upload_file(self, folder, image_url, image_type, text):
         """
         Uploads the file to yandex-disk
@@ -91,6 +111,7 @@ class YandexDiskAPI:
             )
             upload_link = response_upload.json()["href"]
             requests.put(upload_link, timeout=10)
+
             print(
                 "Загрузка изображения начата, но для проверки конечного "
                 "результата пока не хватает знаний"
@@ -101,6 +122,7 @@ class YandexDiskAPI:
 
 
 def main():
+    """main function"""
     group_name = "pd-142"
 
     photo_cat = PhotosCats()
@@ -109,6 +131,7 @@ def main():
     image_url, image_type, text = photo_cat.get_cat()
     folder = yd_api.create_folder(group_name)
     yd_api.upload_file(folder, image_url, image_type, text)
+    yd_api.append_to_json(f"{text}.{image_type}")
 
 
 if __name__ == "__main__":
