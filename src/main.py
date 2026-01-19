@@ -111,7 +111,7 @@ class YandexDiskAPI:
             )
             upload_link = response_upload.json()["href"]
             requests.put(upload_link, timeout=10)
-
+            self.append_to_json(f"{text}.{image_type}")
             print(
                 "Загрузка изображения начата, но для проверки конечного "
                 "результата пока не хватает знаний"
@@ -131,7 +131,6 @@ def main():
     image_url, image_type, text = photo_cat.get_cat()
     folder = yd_api.create_folder(group_name)
     yd_api.upload_file(folder, image_url, image_type, text)
-    yd_api.append_to_json(f"{text}.{image_type}")
 
 
 if __name__ == "__main__":
