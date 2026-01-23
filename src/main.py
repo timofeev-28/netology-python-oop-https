@@ -2,6 +2,8 @@ import sys
 import os
 import requests
 import json
+from dotenv import load_dotenv
+
 
 # ссылка на созданную папку с фото
 # https://disk.yandex.ru/d/JkDr_QGbJQxMpQ
@@ -123,10 +125,12 @@ class YandexDiskAPI:
 
 def main():
     """main function"""
+    load_dotenv()  # Загружает переменные из .env
+    yd_token = os.getenv("YD_TOKEN")
     group_name = "pd-142"
 
     photo_cat = PhotosCats()
-    yd_api = YandexDiskAPI("")
+    yd_api = YandexDiskAPI(yd_token)
 
     image_url, image_type, text = photo_cat.get_cat()
     folder = yd_api.create_folder(group_name)
